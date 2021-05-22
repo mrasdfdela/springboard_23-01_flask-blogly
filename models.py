@@ -26,3 +26,7 @@ class User(db.Model):
       db.String(200),
       nullable = False
     )
+
+    @classmethod
+    def get_all_users(cls):
+      return cls.query.all();
