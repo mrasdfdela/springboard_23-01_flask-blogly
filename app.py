@@ -23,3 +23,10 @@ def user_listing():
 @app.route("/new_user")
 def new_user():
   return render_template("new_user.html")
+
+@app.route("/user/<int:user_id>")
+def user_detail(user_id):
+  user = User.query.get(user_id)
+  # import pdb
+  # pdb.set_trace
+  return render_template("user_detail.html",user=user)
