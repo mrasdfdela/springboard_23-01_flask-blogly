@@ -6,8 +6,8 @@
 
 {% block content %}
   <img src="{{user.image_url}}" alt="{{user.first_name}} {{user.last_name}}" class="img-thumbnail">
-  <p>User ID:{{user.id}}</p>
-  <a class="btn btn-primary" style="color:white" href="/new_user">Add user</a>
-  <a class="btn btn-danger" style="color:white" href="/new_user">Add user</a>
+  <form action="/user/{{user.id}}/delete" method="POST">
+    <a class="btn btn-primary" style="color:white" href="/user/{{user.id}}/edit">Edit user</a>
+    <button class="btn btn-danger" style="color:white">Delete user</button>
+  </form>
 {% endblock %}
-
