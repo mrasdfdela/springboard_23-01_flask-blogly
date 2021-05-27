@@ -23,7 +23,7 @@ class HomeTestCase(TestCase):
             self.assertEqual(res.status_code, 200)
             self.assertIn("<h1>Users</h1>", html)
 
-class NewFormTestCase(TestCase):
+class NewUserFormTestCase(TestCase):
     def test_render_form(self):
         with app.test_client() as client:
             res = client.get('/users/new')
@@ -32,7 +32,7 @@ class NewFormTestCase(TestCase):
             self.assertEqual(res.status_code, 200)
             self.assertIn("<h1>Create a User</h1>", html)
 
-class DetailTestCase(TestCase):
+class UserDetailTestCase(TestCase):
     def test_user_detail(self):
         with app.test_client() as client:
             res = client.get('/user/1')
@@ -41,24 +41,32 @@ class DetailTestCase(TestCase):
             self.assertEqual(res.status_code, 200)
             self.assertIn("<h1>Alan Alda</h1>", html)
 
-class NewTestCase(TestCase):
+class NewUserTestCase(TestCase):
     def setUp(self):
-        new_user = User(
-          first_name="Barbara", 
-          last_name="Streisand",
-          image_url="https://bit.ly/3wmPXIS")
-        db.session.add(new_user)
-        db.session.commit()
-        self.pet_id = new_user.id
+        self.user_id = addBarbara(self)
 
     def tearDown(self):
-        User.query.filter_by(id=self.pet_id).delete()
+        User.query.filter_by(id=self.user_id).delete()
         db.session.commit()
 
     def test_new_user(self):
         with app.test_client() as client:
-            res = client.get(f'/user/{self.pet_id}')
+            res = client.get(f'/user/{self.user_id}')
             html = res.get_data(as_text=True)
 
             self.assertEqual(res.status_code, 200)
             self.assertIn("<h1>Barbara Streisand</h1>", html)
+
+# class NewPostTestCase(TestCase):
+#     def 
+# class EditPostTestCase(TestCase):
+# class DeletePostTestCase(TestCase):
+
+def addBarbara(self):
+    new_user = User(
+              first_name="Barbara", 
+              last_name="Streisand",
+              image_url="https://bit.ly/3wmPXIS")
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user.id

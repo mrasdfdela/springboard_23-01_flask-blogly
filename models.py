@@ -32,7 +32,7 @@ class User(db.Model):
       nullable = False
     )
 
-    posts = db.relationship('Post', backref='posts', cascade="all, delete")
+    posts = db.relationship('Post', backref='user', cascade="all, delete")
 
     @classmethod
     def get_all_users(cls):

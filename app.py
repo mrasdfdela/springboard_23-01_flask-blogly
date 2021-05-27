@@ -20,17 +20,15 @@ db.create_all()
 def home():
   return redirect("/users")
 
-
+""" ***** USER ROUTES ***** """
 @app.route("/users")
 def user_listing():
   users = User.get_all_users()
   return render_template("users.html", users=users)
 
-
 @app.route("/users/new")
 def new_user_form():
   return render_template("new_user.html")
-
 
 @app.route("/users/new", methods=['POST'])
 def new_user_post():
@@ -44,18 +42,15 @@ def new_user_post():
   db.session.commit()
   return redirect(f"/user/{user.id}>")
 
-
 @app.route("/user/<int:user_id>")
 def user_detail(user_id):
   user = User.query.get(user_id)
   return render_template("user_detail.html",user=user)
 
-
 @app.route("/user/<int:user_id>/edit")
 def edit_user_form(user_id):
   user = User.query.get(user_id)
   return render_template("edit_user.html",user=user)
-
 
 @app.route("/user/<int:user_id>/edit", methods=["POST"])
 def edit_user(user_id):
@@ -72,7 +67,6 @@ def edit_user(user_id):
   db.session.commit()
   return redirect(f"/user/{user.id}")
 
-
 @app.route("/user/<int:user_id>/delete", methods=["POST"])
 def delete_user(user_id):
   User.query.filter_by(id=user_id).delete()
@@ -80,6 +74,7 @@ def delete_user(user_id):
   db.session.commit()
   return redirect(f"/users")
 
+""" ***** POST ROUTES ***** """
 @app.route("/users/<int:user_id>/posts/new")
 def new_post_form(user_id):
   user = User.query.get(user_id)
@@ -95,3 +90,31 @@ def new_post(user_id):
   db.session.add(new_post)
   db.session.commit()
   return redirect(f"/user/{user_id}")
+
+@app.route("/posts/<int:post_id>")
+def view_post(post_id):
+  post = Post.query.get(post_id)
+  return render_template("view_post.html", post = post)
+
+@app.route("/posts/<int:post_id>/edit")
+def edit_post_form(post_id):
+  post = Post.query.get(post_id)
+  return render_template("edit_post.html", post=post)
+
+@app.route("/posts/<int:post_id>/edit", methods=["POST"])
+def edit_post(post_id):
+  post = Post.query.get(post_id)
+  req = request.form
+
+  post.title = req['title']
+  post.content = req['content']
+  db.session.commit()
+
+  return redirect(f"/posts/{post_id}")
+
+@app.route("/posts/<int:post_id>/delete", methods=["POST"])
+def delete_post(post_id):
+  user = Post.query.get(post_id).user
+  Post.query.filter_by(id=post_id).delete()
+  db.session.commit()
+  return redirect(f"/user/{user.id}")
