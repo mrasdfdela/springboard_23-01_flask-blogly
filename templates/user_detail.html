@@ -5,9 +5,16 @@
 {% endblock %}
 
 {% block content %}
-  <img src="{{user.image_url}}" alt="{{user.first_name}} {{user.last_name}}" class="img-thumbnail">
+  <img src="{{user.image_url}}" alt="{{user.first_name}} {{user.last_name}}" class="img-thumbnail" width="25%">
   <form action="/user/{{user.id}}/delete" method="POST">
     <a class="btn btn-primary" style="color:white" href="/user/{{user.id}}/edit">Edit user</a>
     <button class="btn btn-danger" style="color:white">Delete user</button>
   </form>
+  <h2>Posts</h2>
+  <ul>
+  {% for post in user.posts %}
+    <li><a href='/posts/{{post.id}}'>{{post.title}}</a></li>
+    {% endfor %}
+  </ul>
+  <a class="btn btn-primary" href="/users/{{user.id}}/posts/new">Add Post</a>
 {% endblock %}

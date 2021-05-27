@@ -23,5 +23,5 @@ post1 = Post(
   user_id=1
   )
 
-db.session.add_all(post1)
+db.session.add_all([post1])
 db.session.commit()
