@@ -78,16 +78,25 @@ def delete_user(user_id):
 @app.route("/users/<int:user_id>/posts/new")
 def new_post_form(user_id):
   user = User.query.get(user_id)
-  return render_template("new_post.html", user=user)
+  tags = Tag.query.all()
+  return render_template("new_post.html", user=user, tags=tags)
 
 @app.route("/users/<int:user_id>/posts/new", methods=["POST"])
 def new_post(user_id):
   req = request.form
   title = req['title']
   content = req['content']
+  tag_ids = req.getlist("tags")
 
   new_post = Post(title=title, content=content,user_id=user_id)
+
   db.session.add(new_post)
+  db.session.commit()
+
+  for tag_id in tag_ids:
+    post_tag = PostTag(post_id = new_post.id, tag_id=tag_id)
+    db.session.add(post_tag)
+  
   db.session.commit()
   return redirect(f"/user/{user_id}")
 
@@ -99,17 +108,36 @@ def view_post(post_id):
 @app.route("/posts/<int:post_id>/edit")
 def edit_post_form(post_id):
   post = Post.query.get(post_id)
-  return render_template("edit_post.html", post=post)
+  tags = Tag.query.all()
+
+  return render_template("edit_post.html", post=post, tags=tags)
 
 @app.route("/posts/<int:post_id>/edit", methods=["POST"])
 def edit_post(post_id):
   post = Post.query.get(post_id)
   req = request.form
+  form_tag_ids = req.getlist("tags")
 
   post.title = req['title']
   post.content = req['content']
   db.session.commit()
 
+
+  for form_tag_id in form_tag_ids:
+    if not PostTag.query.get((post.id,form_tag_id)):
+      new_post_tag = PostTag(post_id=post.id, tag_id = form_tag_id)
+      db.session.add(new_post_tag)
+  
+  for post_tag in PostTag.query.filter_by(post_id=post.id):
+
+    if str(post_tag.tag_id) not in form_tag_ids:
+      post_tag_id = post_tag.tag_id
+      PostTag.query.filter_by(
+        post_id = post.id,
+        tag_id = post_tag_id
+      ).delete()
+
+  db.session.commit()
   return redirect(f"/posts/{post_id}")
 
 @app.route("/posts/<int:post_id>/delete", methods=["POST"])
@@ -155,3 +183,9 @@ def edit_tag(tag_id):
   tag.name = req['updated_tag']
   db.session.commit()
   return redirect(f"/tags/{tag.id}")
+
+@app.route("/tags/<int:tag_id>/delete", methods=["POST"])
+def delete_tag(tag_id):
+  Tag.query.filter_by(id=tag_id).delete()
+  db.session.commit()
+  return redirect(f"/tags")

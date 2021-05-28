@@ -15,6 +15,14 @@
     <textarea name="content" class="form-control"></textarea>
   </div>
   <div>
+    {% for tag in tags %}
+    <div>
+      <input type="checkbox" name="tags" value="{{tag.id}}">
+      <label for="{{tag.name}}">{{tag.name}}</label>
+    </div> 
+    {% endfor %}
+  </div>
+  <div>
     <a class="btn btn-secondary" href="/user/{{user.id}}">Cancel</a>
     <input type="submit" value="Add" class="btn btn-primary">
   </div>
