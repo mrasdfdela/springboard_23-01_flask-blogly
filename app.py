@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, redirect
 # from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, Tag, PostTag
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "jerrys_secret"
@@ -118,3 +118,40 @@ def delete_post(post_id):
   Post.query.filter_by(id=post_id).delete()
   db.session.commit()
   return redirect(f"/user/{user.id}")
+
+""" ***** TAG ROUTES ***** """
+@app.route("/tags")
+def view_tags():
+  tags = Tag.query.all()
+  return render_template("view_tags.html", tags=tags)
+
+@app.route("/tags/new")
+def new_tags():
+  return render_template("new_tags.html")
+
+@app.route("/tags/new", methods=["POST"])
+def create_tags():
+  req = request.form
+  new_tag = Tag(name=req['new_tag'])
+  db.session.add(new_tag)
+  db.session.commit()
+
+  return redirect(f"/tags/{new_tag.id}")
+
+@app.route("/tags/<int:tag_id>")
+def tag_details(tag_id):
+  tag = Tag.query.get(tag_id)
+  return render_template("tag_detail.html", tag=tag)
+
+@app.route("/tags/<int:tag_id>/edit")
+def edit_tag_form(tag_id):
+  tag = Tag.query.get(tag_id)
+  return render_template("edit_tags.html", tag=tag)
+
+@app.route("/tags/<int:tag_id>/edit", methods=["POST"])
+def edit_tag(tag_id):
+  tag = Tag.query.get(tag_id)
+  req = request.form
+  tag.name = req['updated_tag']
+  db.session.commit()
+  return redirect(f"/tags/{tag.id}")

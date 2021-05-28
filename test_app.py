@@ -77,15 +77,20 @@ def addPost(user_id):
     return new_post.id
 
 class NewPostTestCase(TestCase):
+    """ tests for new post form, new post, edit post, delete post 
+    """
     def setUp(self):
+        """ adds new user 'Barbara Streisand' """
         self.user_id = addBarbara()
         # self.post_id = addPost(self.user_id)
     def tearDown(self):
+      """ deletes user 'Barbara Streisand' and related posts """
         Post.query.filter_by(user_id=self.user_id).delete()
         User.query.filter_by(id=self.user_id).delete()
         db.session.commit()
     
     def test_new_post_form(self):
+        """ tests new post form rendering """
         with app.test_client() as client:
             res = client.get(f"/users/{self.user_id}/posts/new")
             user = User.query.filter_by(id=self.user_id).first()
@@ -97,6 +102,7 @@ class NewPostTestCase(TestCase):
             self.assertIn(f"<h1>Add Post for {fname} {lname}", html)
     
     def test_new_post(self):
+        """ tests new post & redirect to user detail page """
         with app.test_client() as client:
             title = 'I am a woman in love'
             res = client.post(
@@ -114,6 +120,7 @@ class NewPostTestCase(TestCase):
         self.assertIn(f'>{title}</a>',html)
     
     def test_edit_post(self):
+        """ tests edit post & redirect to post """
         with app.test_client() as client:
             self.post_id = addPost(self.user_id)
             new_title = "Edited Title"
@@ -126,11 +133,12 @@ class NewPostTestCase(TestCase):
               follow_redirects=True
             )
         html = res.get_data(as_text=True)
-        
+
         self.assertEqual(res.status_code,200)
         self.assertIn(f'<h1>{new_title}</h1>',html)
   
     def test_delete_post(self):
+        """ tests delete post and redirect to user detail page """
         user = User.query.get(self.user_id)
         fname = user.first_name
         lname = user.last_name
