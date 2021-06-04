@@ -1,5 +1,5 @@
 # springboard_23-01_flask-blogly
 
-Flask project for creating a blogging website using PostgreSQL and SQLAlchemy. Can add users and blog posts associated with those users. Includes a seed file and route testing file.
+My first project using multiple technologies. This is a Flask blogging website that uses PostgreSQL and SQLAlchemy. Users can be added and blog posts can then be added and associated with those users. Includes a seed file and route testing file.
 
 *Note: Does not include authentication*
